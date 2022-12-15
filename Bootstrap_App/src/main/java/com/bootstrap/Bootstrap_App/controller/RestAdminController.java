@@ -5,6 +5,7 @@ import com.bootstrap.Bootstrap_App.model.User;
 import com.bootstrap.Bootstrap_App.repositories.RoleRepository;
 import com.bootstrap.Bootstrap_App.service.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.HttpEntity;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -12,6 +13,9 @@ import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 import java.util.Optional;
+
+import static org.springframework.http.MediaType.APPLICATION_JSON_VALUE;
+import static org.springframework.web.bind.annotation.RequestMethod.POST;
 
 @RestController
 @RequestMapping("/api")
@@ -67,11 +71,12 @@ public class RestAdminController {
     }
 
     @PostMapping("user/{id}/edit")
-    public ResponseEntity<User> userEdit(@PathVariable("id") int id,@RequestBody User user) {
+    public ResponseEntity<User> userEdit(@PathVariable("id") int id, @RequestBody User user) {
         if(user.getPassword().length()!=60) {
             user.setPassword(encoder.encode(user.getPassword()));
         }
         List<Role> roleList = user.getRoles();
+        System.out.println(roleList);
         Optional<Role> roleUser = repository.findById(1);
         Optional<Role> roleAdmin = repository.findById(2);
         if (roleList.isEmpty() || roleList==null) {
@@ -84,6 +89,10 @@ public class RestAdminController {
         } else if (roleList.get(0).getRole() == "2") {
             roleList.add(roleAdmin.get());
         }
+        System.out.println("-------------------------------------------");
+        System.out.println(roleList);
+        System.out.println(user.getAuthorities());
+        System.out.println(user.getRoles());
         user.setRoles(roleList);
         service.updateUser(id,user);
         return new ResponseEntity<>(user,HttpStatus.OK);

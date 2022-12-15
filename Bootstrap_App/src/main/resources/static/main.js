@@ -135,6 +135,8 @@ function getRoles(selector) {
             })
         }
     }
+    console.log('--------------------------')
+    console.log(roles)
     return roles
 }
 
